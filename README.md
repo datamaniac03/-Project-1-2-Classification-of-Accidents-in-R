@@ -1,4 +1,4 @@
-# -Academic Project-1&2-Classification-of-Accidents-in-R
+# Academic Project-1&2-Classification-of-Accidents-in-R
 
 This is a part of a consulting project given by Tata Steel to Industrial Engineering Dept. IIT Kharagpur to analyse the huge textual data related to the accidents that occured or did not occur in the past 4 years. 
 There are two types of input text csv files, 
@@ -17,7 +17,7 @@ PS. this is the first ever project related to data analytics. So, I had no prior
 
 1. Input the data files and make the text corpus.
 2. Implement prediction models to forecast the chances of accidents to happen for testing dataset (description).
-3. Further predict the class (or category) of accident (eg. Slip/Fall/ Fire Explosion/ Leakage etc.
+3. Further predict the class (or category) of accident (eg. Slip/Fall/ Fire Explosion/ Leakage etc.)
 
 
 #  Process Flow
@@ -31,3 +31,7 @@ iii. SVM.
 iv. Maximum Entropy.
 
 4.  Next the results were concluded using the Confusion Matrix, with which we get the accuracy, precision, recall and F score. Moreover ROC is also built in each case.
+
+#  Honest Flaw in the Approach
+
+Since, I was a newbie at that time, I didn't know anything about Word2Vec or ngram. etc topics or parameter tuning of classifiers, the accuracy was not high. 
