@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Accident Classification of Steel Plant by vishallakha</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Accident Classification of Steel Plant</h1>
+      <h2 class="project-tagline">Academic Project 1&amp;2</h2>
+      <a href="https://github.com/vishallakha/-Project-1-2-Classification-of-Accidents-in-R" class="btn">View on GitHub</a>
+      <a href="https://github.com/vishallakha/-Project-1-2-Classification-of-Accidents-in-R/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/vishallakha/-Project-1-2-Classification-of-Accidents-in-R/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Introduction</h1>
+
+<p>This is a part of a consulting project given by Tata Steel to Industrial Engineering Dept. IIT Kharagpur to analyse the huge textual data related to the accidents that occurred or did not occur in the past 4 years. 
+There are two types of input text .csv files, </p>
+
+<ol>
+<li>Description of event where accident actually occurred. </li>
+<li>Description of event where accident could have happened, but was missed due to precautions.</li>
+</ol>
+
+<p>The description tells us about the environmental factors responsible for the hazard and the target human.</p>
+
+<p>All of the coding work is fulfilled using R programming language. the code is rather simple with the use of available libraries to handle the textual data.</p>
+
+<p>PS. this is the first ever project related to data analytics. So, I had no prior experience in this task beforehand.</p>
+
+<h1>
+<a id="task-summary" class="anchor" href="#task-summary" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Task Summary</h1>
+
+<ol>
+<li>Input the data files and make the text corpus.</li>
+<li>Implement prediction models to forecast the chances of accidents to happen for testing data set (description).</li>
+<li>Further predict the class (or category) of accident (eg. Slip/Fall/ Fire Explosion/ Leakage etc.)</li>
+</ol>
+
+<h1>
+<a id="process-flow" class="anchor" href="#process-flow" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Process Flow</h1>
+
+<ol>
+<li>the data files are read and converted to Text Corpus using TM library in R.</li>
+<li>after the creation of Term Document Matrix with normalized TF-IDF, the data features with less frequency are removed to reduce the sparsity of data.</li>
+<li><p>Applied the following Machine Learning Models for the classification process of accidents and non accidents.
+i. KNN
+ii. Random Forest.
+iii. SVM.
+iv. Maximum Entropy.</p></li>
+<li><p>Next the results were concluded using the Confusion Matrix, with which we get the accuracy, precision, recall and F score. Moreover ROC is also built in each case.</p></li>
+</ol>
+
+<h3>
+<a id="honest-flaw-in-the-approach" class="anchor" href="#honest-flaw-in-the-approach" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Honest Flaw in the Approach</h3>
+
+<p>Since, I was a newbie at that time, I didn't know anything about Word2Vec or ngram. etc topics or parameter tuning of classifiers, the accuracy was not high. </p>
+
+<h1>
+<a id="code" class="anchor" href="#code" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Code</h1>
+
+<pre><code>setwd("C:/Users/Vishal Lakha/Desktop/project")
+library(httr)
+set_config(use_proxy(url="10.3.100.207", port=8080))
+library(tm)
+library(class)
+library(e1071)
+library(wordcloud)
+library(ggplot2)
+library(ROCR)
+require(graphics)
+library(cluster)
+library(fpc) 
+library(factoextra)
+library(caret)
+library(pracma)
+library(gmodels)
+library(ROCR)
+library(FSelector)
+library(cvTools)
+# install.packages("devtools")
+# library(devtools)
+# install_github("kassambara/factoextra")
+
+
+
+#Pre-processing
+library(tm)
+reviews &lt;- read.csv ("data for matrix.csv", stringsAsFactors=FALSE, header = F)
+review_source &lt;- VectorSource(reviews)
+corpus &lt;- Corpus(review_source)
+corpus &lt;- tm_map(corpus, content_transformer(tolower))
+corpus &lt;- tm_map(corpus, removePunctuation)
+corpus &lt;- tm_map(corpus, stripWhitespace)
+corpus=tm_map(corpus, function(x) removeWords(x, stopwords("english")))
+corpus=tm_map(corpus, function(x) removeWords(x, stopwords("en")))
+corpus=tm_map(corpus, function(x) removeWords(x, stopwords("SMART")))
+corpus=tm_map(corpus, function(x) removeWords(x, stopwords("german")))
+corpus &lt;- tm_map(corpus, removeNumbers)
+corpus &lt;- tm_map(corpus, stemDocument, language="english")
+#TF-IDF score
+dtm = DocumentTermMatrix(corpus,control=list(bounds = list(global = c(18,Inf)), weighting = function(x) weightTfIdf(x, normalize = TRUE)))
+dtm_matrix &lt;- as.matrix(dtm)
+
+#Frequency Matrix
+frequency &lt;- colSums(dtm_matrix)
+frequency &lt;- sort(frequency, decreasing=TRUE)
+head(frequency)
+
+#KNN CLASSIFICATION (K=5)
+train&lt;-dtm_matrix[1:4960,]
+test&lt;-dtm_matrix[4961:6611,]
+prevdata&lt;-read.csv("training classified.csv",header= F)$V1
+prediction&lt;-knn(train,test,cl=prevdata,k=5)
+actual&lt;-read.csv("testing classified.csv",header= F)$V1
+
+prednew&lt;-as.vector(prediction)
+actnew&lt;-as.vector(actual)
+
+
+library(tm)
+library(RTextTools)
+dim(dtm_matrix)
+
+container &lt;- create_container(dtm_matrix, prevdata, trainSize=1:4960,testSize=4961:6611, virgin=T)
+
+SVM &lt;- train_model(container,"SVM")
+MAXENT &lt;- train_model(container,"MAXENT", l1_regularizer = 1,le_regularizer=1, use_sgd = T)
+RF&lt;-train_model(container,"RF")
+
+
+SVM_CLASSIFY &lt;- classify_model(container, SVM)
+MAXENT_CLASSIFY &lt;- classify_model(container, MAXENT)
+RF_CLASSIFY &lt;- classify_model(container, RF)
+
+prednew1&lt;-SVM_CLASSIFY$SVM_LABEL
+prednew2&lt;-MAXENT_CLASSIFY$MAXENTROPY_LABEL
+prednew3&lt;-RF_CLASSIFY$FORESTS_LABEL
+
+cm&lt;-confusionMatrix(prednew,actnew)
+cm1&lt;-confusionMatrix(prednew1,actnew)
+cm2&lt;-confusionMatrix(prednew2,actnew)
+cm3&lt;-confusionMatrix(prednew3,actnew)
+
+
+library(pROC)
+paste("auc knn",auc(as.ordered(actual),as.ordered(prediction)))
+paste("auc svm",auc(as.ordered(actual),as.ordered(prednew1)))
+paste("auc maxent",auc(as.ordered(actual),as.ordered(prednew2)))
+paste("auc rf",auc(as.ordered(actual),as.ordered(prednew3)))
+
+plot.roc(as.ordered(actual),as.ordered(prediction))
+</code></pre>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/vishallakha/-Project-1-2-Classification-of-Accidents-in-R">Accident Classification of Steel Plant</a> is maintained by <a href="https://github.com/vishallakha">vishallakha</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
