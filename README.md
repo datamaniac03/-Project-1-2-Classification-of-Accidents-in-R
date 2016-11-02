@@ -16,5 +16,18 @@ PS. this is the first ever project related to data analytics. So, I had no prior
 #  Task Summary
 
 1. Input the data files and make the text corpus.
-2. 
-First ,both of the data files are 
+2. Implement prediction models to forecast the chances of accidents to happen for testing dataset (description).
+3. Further predict the class (or category) of accident (eg. Slip/Fall/ Fire Explosion/ Leakage etc.
+
+
+#  Process Flow
+
+1. the data files are read and coverted to Text Corpus using TM library in R.
+2. after the creation of Term Document Matrix with mormalized TF-IDF, the data features with less frequency are removed to reduce the sparcity of data.
+3. Applied the following Machine Learning Models for the classification process of accidents and non accidents.
+i. KNN
+ii. Random Forest.
+iii. SVM.
+iv. Maximum Entropy.
+
+4.  Next the results were concluded using the Confusion Matrix, with which we get the accuracy, precision, recall and F score. Moreover ROC is also built in each case.
