@@ -32,6 +32,6 @@ iv. Maximum Entropy.
 
 4.  Next the results were concluded using the Confusion Matrix, with which we get the accuracy, precision, recall and F score. Moreover ROC is also built in each case.
 
-#  Honest Flaw in the Approach
+###  Honest Flaw in the Approach
 
 Since, I was a newbie at that time, I didn't know anything about Word2Vec or ngram. etc topics or parameter tuning of classifiers, the accuracy was not high. 
